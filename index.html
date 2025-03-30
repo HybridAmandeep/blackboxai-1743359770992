@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRCTC Clone - Railway Reservation System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .hero-bg {
+            background-image: url('https://images.pexels.com/photos/3607472/pexels-photo-3607472.jpeg');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-blue-900 text-white p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-train text-2xl"></i>
+                <h1 class="text-2xl font-bold">IRCTC Clone</h1>
+            </div>
+            <div class="space-x-4">
+                <a href="login.html" class="hover:text-blue-200">Login</a>
+                <a href="signup.html" class="hover:text-blue-200">Sign Up</a>
+                <a href="admin.html" class="hover:text-blue-200">Admin</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section with Search Form -->
+    <div class="hero-bg h-96 flex items-center justify-center">
+        <div class="bg-white bg-opacity-90 p-8 rounded-lg shadow-xl w-full max-w-4xl">
+            <h2 class="text-3xl font-bold text-center mb-6 text-blue-900">Book Train Tickets</h2>
+            
+            <form id="searchForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-gray-700 mb-2">From Station</label>
+                    <select id="fromStation" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select Station</option>
+                        <option value="DEL">Delhi (DEL)</option>
+                        <option value="MUM">Mumbai (MUM)</option>
+                        <option value="CHE">Chennai (CHE)</option>
+                        <option value="BAN">Bangalore (BAN)</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 mb-2">To Station</label>
+                    <select id="toStation" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select Station</option>
+                        <option value="DEL">Delhi (DEL)</option>
+                        <option value="MUM">Mumbai (MUM)</option>
+                        <option value="CHE">Chennai (CHE)</option>
+                        <option value="BAN">Bangalore (BAN)</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 mb-2">Journey Date</label>
+                    <input type="date" id="journeyDate" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+                
+                <div class="md:col-span-3 text-center">
+                    <button type="submit" class="bg-blue-900 text-white px-6 py-3 rounded-lg hover:bg-blue-800 transition duration-300">
+                        <i class="fas fa-search mr-2"></i> Search Trains
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white p-6 mt-8">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2023 IRCTC Clone. All rights reserved.</p>
+            <div class="flex justify-center space-x-4 mt-4">
+                <a href="#" class="hover:text-blue-300"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="hover:text-blue-300"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="hover:text-blue-300"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const fromStation = document.getElementById('fromStation').value;
+            const toStation = document.getElementById('toStation').value;
+            const journeyDate = document.getElementById('journeyDate').value;
+            
+            if (!fromStation || !toStation || !journeyDate) {
+                alert('Please fill all fields');
+                return;
+            }
+            
+            if (fromStation === toStation) {
+                alert('Source and destination cannot be same');
+                return;
+            }
+            
+            // Redirect to search results page with query parameters
+            window.location.href = `train_search_results.html?from=${fromStation}&to=${toStation}&date=${journeyDate}`;
+        });
+
+        // Set minimum date to today
+        document.getElementById('journeyDate').min = new Date().toISOString().split('T')[0];
+    </script>
+</body>
+</html>
