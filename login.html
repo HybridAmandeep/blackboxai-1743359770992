@@ -85,7 +85,7 @@
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const loginId = document.getElementById('login_id').value.trim();
             const password = document.getElementById('password').value;
@@ -111,29 +111,37 @@
             }
             
             if (isValid) {
-                // Simulate login with mock data (would connect to Login_credential table in real implementation)
-                const mockUsers = [
-                    { login_id: 'admin@irctc.com', password: 'admin123' },
-                    { login_id: 'user1', password: 'password1' }
-                ];
-                
-                const user = mockUsers.find(u => 
-                    (u.login_id === loginId) && (u.password === password)
-                );
-                
-                if (user) {
-                    // Store login state (would use session/cookies in real implementation)
-                    localStorage.setItem('isLoggedIn', 'true');
-                    localStorage.setItem('username', loginId);
+                try {
+                    const response = await fetch('http://localhost:3000/api/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            username: loginId,
+                            password: password
+                        })
+                    });
+
+                    const data = await response.json();
                     
-                    if (rememberMe) {
-                        localStorage.setItem('rememberMe', 'true');
+                    if (response.ok) {
+                        // Store login state
+                        localStorage.setItem('isLoggedIn', 'true');
+                        localStorage.setItem('username', loginId);
+                        
+                        if (rememberMe) {
+                            localStorage.setItem('rememberMe', 'true');
+                        }
+                        
+                        // Redirect to homepage
+                        window.location.href = 'index.html';
+                    } else {
+                        alert(data.error || 'Login failed. Please try again.');
                     }
-                    
-                    // Redirect to homepage
-                    window.location.href = 'index.html';
-                } else {
-                    alert('Invalid credentials. Please try again.');
+                } catch (error) {
+                    console.error('Login error:', error);
+                    alert('An error occurred during login. Please try again.');
                 }
             }
         });
