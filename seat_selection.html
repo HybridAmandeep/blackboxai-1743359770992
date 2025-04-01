@@ -129,43 +129,69 @@
     </div>
 
     <script>
-        // Get selected train from localStorage
-        const selectedTrain = JSON.parse(localStorage.getItem('selectedTrain'));
+        // Get train code from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const trainCode = urlParams.get('train');
+        let selectedTrain = null;
         let selectedClass = null;
         let selectedSeats = [];
         let passengers = [];
         let passengerCount = 1;
 
+        // Fetch train details from API
+        async function fetchTrainDetails() {
+            try {
+                const response = await fetch(`http://localhost:3000/api/trains/${trainCode}`);
+                if (!response.ok) throw new Error('Failed to fetch train details');
+                return await response.json();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error loading train details. Please try again.');
+                return null;
+            }
+        }
+
         // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
+            selectedTrain = await fetchTrainDetails();
+            if (!selectedTrain) return;
+
             // Display train summary
             document.getElementById('trainSummary').innerHTML = `
                 <div>
                     <p class="text-gray-600">Train No.</p>
-                    <p class="font-semibold">${selectedTrain.train_code}</p>
+                    <p class="font-semibold">${selectedTrain.Train_code}</p>
                 </div>
                 <div>
                     <p class="text-gray-600">Train Name</p>
-                    <p class="font-semibold">${selectedTrain.train_name}</p>
+                    <p class="font-semibold">${selectedTrain.Train_name}</p>
                 </div>
                 <div>
                     <p class="text-gray-600">Journey Date</p>
-                    <p class="font-semibold">${localStorage.getItem('journeyDate')}</p>
+                    <p class="font-semibold">${new URLSearchParams(window.location.search).get('date')}</p>
                 </div>
             `;
 
-            // Populate class options
-            const classOptions = document.getElementById('classOptions');
-            selectedTrain.classes.forEach(cls => {
-                const button = document.createElement('button');
-                button.className = 'bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg';
-                button.textContent = `${cls.class_name} (₹${cls.fare})`;
-                button.addEventListener('click', () => selectClass(cls));
-                classOptions.appendChild(button);
-            });
+            // Fetch available classes from API
+            try {
+                const classResponse = await fetch(`http://localhost:3000/api/trains/${trainCode}/classes`);
+                const classes = await classResponse.json();
+                
+                const classOptions = document.getElementById('classOptions');
+                classes.forEach(cls => {
+                    const button = document.createElement('button');
+                    button.className = 'bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg';
+                    button.textContent = `${cls.Class_name} (₹${cls.Fare})`;
+                    button.addEventListener('click', () => selectClass(cls));
+                    classOptions.appendChild(button);
+                });
 
-            // Add first passenger form
-            addPassengerForm();
+                // Add first passenger form
+                addPassengerForm();
+            } catch (error) {
+                console.error('Error loading classes:', error);
+                alert('Error loading class options. Please try again.');
+            }
         });
 
         // Class selection handler
